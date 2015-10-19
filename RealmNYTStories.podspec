@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "RealmNYTStories"
-  s.version      = "0.5"
+  s.version      = "0.6"
   s.summary      = "Ready-to-go JSON parsing of New York Times Top Stories API into Realm models"
   s.description  = <<-DESC
 Loads data from New York Times Top Stories API and parses the JSON into provided Realm models.
