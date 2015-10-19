@@ -9,7 +9,7 @@ Loads data from New York Times Top Stories API and parses the JSON into provided
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author       = { "Adam Fish" => "af@realm.io" }
   s.platform     = :ios, "8.0"
-  s.source       = { :git => "https://github.com/bigfish24/RealmNYTStories", :tag => "v#{s.version}" }
+  s.source       = { :git => "https://github.com/bigfish24/RealmNYTStories.git", :tag => "v#{s.version}" }
   s.source_files  = "swift/*.{swift}"
   s.requires_arc = true
   s.dependency "SwiftFetchedResultsController", ">= 2.4"

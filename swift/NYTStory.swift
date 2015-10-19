@@ -7,6 +7,7 @@
 //
 
 import RealmSwift
+import SwiftFetchedResultsController
 
 public class NYTStory: Object {
     public dynamic var section = ""
