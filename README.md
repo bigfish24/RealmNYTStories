@@ -28,7 +28,7 @@ pod 'RealmSwiftNYTStories'
                           withAPIKey:@"INSERT_YOUR_API_KEY_HERE"];
 ```
 **Swift**
-```objc
+```swift
 // Call somewhere in your code
 // Performs async request, parses JSON, and adds objects to given Realm
 NYTStory.loadLatestStories(intoRealm: try! Realm(), withAPIKey: "INSERT_YOUR_API_KEY_HERE")
