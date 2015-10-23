@@ -162,9 +162,9 @@ public class NYTStory: Object {
                 
                 let topStoriesRequest = NSURLRequest(URL: url)
                 
-                NSURLConnection.sendAsynchronousRequest(topStoriesRequest, queue: NSOperationQueue(), completionHandler: { (response, data, connectionError) -> Void in
+                NSURLSession.sharedSession().dataTaskWithRequest(topStoriesRequest, completionHandler: { (data, response, error) -> Void in
                     
-                    if connectionError != nil {
+                    if error != nil {
                         return
                     }
                     
@@ -185,7 +185,7 @@ public class NYTStory: Object {
                             try! aRealm.commitWrite()
                         }
                     }
-                })
+                }).resume()
             }
         });
     }

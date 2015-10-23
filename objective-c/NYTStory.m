@@ -93,34 +93,35 @@ geoFacet = _geoFacet;
             
             NSURLRequest *topStoriesRequest = [NSURLRequest requestWithURL:topStoryURL];
             
-            [NSURLConnection sendAsynchronousRequest:topStoriesRequest
-                                               queue:[[NSOperationQueue alloc] init]
-                                   completionHandler:^(NSURLResponse *response,
-                                                       NSData *data,
-                                                       NSError *connectionError) {
-                                       if (connectionError) {
-                                           return;
-                                       }
-                                       
-                                       NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
-                                                                                            options:0
+            [[[NSURLSession sharedSession] dataTaskWithRequest:topStoriesRequest
+                                            completionHandler:^(NSData * _Nullable data,
+                                                                NSURLResponse * _Nullable response,
+                                                                NSError * _Nullable error) {
+                                                
+                                                if (error) {
+                                                    return;
+                                                }
+                                                
+                                                NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
+                                                                                                     options:0
+                                                                                                       error:nil];
+                                                
+                                                NSArray *results = json[@"results"];
+                                                
+                                                RLMRealm *aRealm = [RLMRealm realmWithConfiguration:config
                                                                                               error:nil];
-                                       
-                                       NSArray *results = json[@"results"];
-                                       
-                                       RLMRealm *aRealm = [RLMRealm realmWithConfiguration:config
-                                                                                     error:nil];
-                                       
-                                       [aRealm beginWriteTransaction];
-                                       for (NSDictionary *storyJSON in results) {
-                                           NYTStory *story = [NYTStory storyWithJSON:storyJSON];
-                                           
-                                           if (story) {
-                                               [aRealm addOrUpdateObjectWithNotification:story];
-                                           }
-                                       }
-                                       [aRealm commitWriteTransaction];
-                                   }];
+                                                
+                                                [aRealm beginWriteTransaction];
+                                                for (NSDictionary *storyJSON in results) {
+                                                    NYTStory *story = [NYTStory storyWithJSON:storyJSON];
+                                                    
+                                                    if (story) {
+                                                        [aRealm addOrUpdateObjectWithNotification:story];
+                                                    }
+                                                }
+                                                [aRealm commitWriteTransaction];
+                                                
+                                            }] resume];
         }
     });
 }
