@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "RealmSwiftNYTStories"
-  s.version      = "1.0"
+  s.version      = "1.1"
   s.summary      = "Ready-to-go JSON parsing of New York Times Top Stories API into Realm Swift models"
   s.description  = <<-DESC
 Loads data from New York Times Top Stories API and parses the JSON into provided Realm Swift models.
@@ -12,7 +12,7 @@ Loads data from New York Times Top Stories API and parses the JSON into provided
   s.source       = { :git => "https://github.com/bigfish24/RealmNYTStories.git", :tag => "v#{s.version}" }
   s.source_files  = "swift/*.{swift}"
   s.requires_arc = true
-  s.dependency "SwiftFetchedResultsController", ">= 2.4"
-  s.dependency "RealmSwift", ">= 0.96"
+  s.dependency "SwiftFetchedResultsController", ">= 2.4.1"
+  s.dependency "RealmSwift", ">= 0.96.0"
 
 end
