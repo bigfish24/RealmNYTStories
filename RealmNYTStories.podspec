@@ -12,7 +12,6 @@ Loads data from New York Times Top Stories API and parses the JSON into provided
   s.source       = { :git => "https://github.com/bigfish24/RealmNYTStories.git", :tag => "v#{s.version}" }
   s.source_files  = "objective-c/*.{h,m}"
   s.requires_arc = true
-  s.dependency "RBQFetchedResultsController", ">= 2.4.1"
-  s.dependency "Realm", ">= 0.96.0"
+  s.dependency "Realm", ">= 0.100.0"
 
 end

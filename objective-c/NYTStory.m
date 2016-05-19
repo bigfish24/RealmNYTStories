@@ -8,8 +8,6 @@
 
 #import "NYTStory.h"
 
-#import <RBQFetchedResultsController/RLMRealm+Notifications.h>
-
 @implementation NYTStory
 @synthesize desFacet = _desFacet,
 orgFacet = _orgFacet,
@@ -116,7 +114,7 @@ geoFacet = _geoFacet;
                                                     NYTStory *story = [NYTStory storyWithJSON:storyJSON];
                                                     
                                                     if (story) {
-                                                        [aRealm addOrUpdateObjectWithNotification:story];
+                                                        [aRealm addOrUpdateObject:story];
                                                     }
                                                 }
                                                 [aRealm commitWriteTransaction];

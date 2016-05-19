@@ -7,7 +7,6 @@
 //
 
 import RealmSwift
-import SwiftFetchedResultsController
 
 public class NYTStory: Object {
     public dynamic var section = ""
@@ -179,7 +178,7 @@ public class NYTStory: Object {
                             
                             for storyJSON in results {
                                 if let story = NYTStory.story(storyJSON) {
-                                    aRealm.addWithNotification(story, update: true)
+                                    aRealm.add(story, update: true)
                                 }
                             }
                             try! aRealm.commitWrite()

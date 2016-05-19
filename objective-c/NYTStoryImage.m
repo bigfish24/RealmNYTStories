@@ -9,8 +9,6 @@
 #import "NYTStoryImage.h"
 #import "NYTStory.h"
 
-#import <RBQFetchedResultsController/RBQRealmNotificationManager.h>
-
 @implementation NYTStoryImage
 
 // Specify default values for properties
