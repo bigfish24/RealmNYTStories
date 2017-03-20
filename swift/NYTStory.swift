@@ -3,10 +3,12 @@
 //  SwiftRealmGridController
 //
 //  Created by Adam Fish on 9/8/15.
+//  Updated by Doron Katz on 3/19/17.
 //  Copyright (c) 2015 Adam Fish. All rights reserved.
 //
 
 import RealmSwift
+import Foundation
 
 public class NYTStory: Object {
     public dynamic var section = ""
@@ -23,11 +25,11 @@ public class NYTStory: Object {
     
     public dynamic var itemType = ""
     
-    public dynamic var updatedDate = NSDate.distantPast()
+    public dynamic var updatedDate = Date.distantPast
     
-    public dynamic var createdDate: NSDate = NSDate.distantPast()
+    public dynamic var createdDate: Date = Date.distantPast
     
-    public dynamic var publishedDate = NSDate.distantPast()
+    public dynamic var publishedDate = Date.distantPast
     
     public dynamic var materialTypeFacet = ""
     
@@ -68,31 +70,31 @@ public class NYTStory: Object {
         
         if let updatedDateString = json["updated_date"] as? String {
             
-            let cleanedString = NYTStory.cleanDateString(updatedDateString)
+            let cleanedString = NYTStory.cleanDateString(dateString: updatedDateString)
             
-            if let updatedDate = dateFormatter.dateFromString(cleanedString) {
+            if let updatedDate = dateFormatter.date(from: cleanedString) {
                 story.updatedDate = updatedDate
             }
         }
         
         if let createdDateString = json["created_date"] as? String {
             
-            let cleanedString = NYTStory.cleanDateString(createdDateString)
+            let cleanedString = NYTStory.cleanDateString(dateString: createdDateString)
             
-            if let updatedDate = dateFormatter.dateFromString(cleanedString) {
-                story.createdDate = updatedDate
+            if let updatedDate = dateFormatter.date(from: cleanedString) {
+                story.createdDate = updatedDate as Date
             }
         }
         
         if let publishedDateString = json["published_date"] as? String {
             
-            let cleanedString = NYTStory.cleanDateString(publishedDateString)
+            let cleanedString = NYTStory.cleanDateString(dateString: publishedDateString)
             
-            if let updatedDate = dateFormatter.dateFromString(cleanedString) {
+            if let updatedDate = dateFormatter.date(from: cleanedString) {
                 story.publishedDate = updatedDate
             }
         }
-
+        
         if let materialTypeFacet = json["material_type_facet"] as? String {
             story.materialTypeFacet = materialTypeFacet
         }
@@ -119,7 +121,7 @@ public class NYTStory: Object {
                 }
                 if let dict = imageDict {
                     
-                    story.storyImage = NYTStoryImage.storyImage(dict)
+                    story.storyImage = NYTStoryImage.storyImage(json: dict)
                     
                     return story;
                 }
@@ -132,43 +134,44 @@ public class NYTStory: Object {
     public class func loadLatestStories(intoRealm realm: Realm, withAPIKey apiKey: String) {
         let config = realm.configuration
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), { () -> Void in
+        
+        DispatchQueue.main.async { () -> Void in
             let nytSections =
-            [
-                "home",
-                "world",
-                "national",
-                "politics",
-                "nyregion",
-                "business",
-                "opinion",
-                "technology",
-                "science",
-                "health",
-                "sports",
-                "arts",
-                "fashion",
-                "dining",
-                "travel",
-                "magazine",
-                "realestate"
+                [
+                    "home",
+                    "world",
+                    "national",
+                    "politics",
+                    "nyregion",
+                    "business",
+                    "opinion",
+                    "technology",
+                    "science",
+                    "health",
+                    "sports",
+                    "arts",
+                    "fashion",
+                    "dining",
+                    "travel",
+                    "magazine",
+                    "realestate"
             ]
             
             for section in nytSections {
-                let urlString = "http://api.nytimes.com/svc/topstories/v1/\(section).json?api-key=\(apiKey)"
+                let urlString = "https://api.nytimes.com/svc/topstories/v1/\(section).json?api-key=\(apiKey)"
                 
-                let url = NSURL(string: urlString)!
+                let url = URL(string: urlString)
                 
-                let topStoriesRequest = NSURLRequest(URL: url)
+                let topStoriesRequest = URLRequest(url: url!)
                 
-                NSURLSession.sharedSession().dataTaskWithRequest(topStoriesRequest, completionHandler: { (data, response, error) -> Void in
+                URLSession.shared.dataTask(with: topStoriesRequest as URLRequest, completionHandler: { (data, response, error) -> Void in
                     
                     if error != nil {
                         return
                     }
                     
                     if data != nil {
-                        let json = try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as! NSDictionary
+                        let json = try! JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as! NSDictionary
                         
                         if let results = json["results"] as? [NSDictionary] {
                             
@@ -177,7 +180,7 @@ public class NYTStory: Object {
                             aRealm.beginWrite()
                             
                             for storyJSON in results {
-                                if let story = NYTStory.story(storyJSON) {
+                                if let story = NYTStory.story(json: storyJSON) {
                                     aRealm.add(story, update: true)
                                 }
                             }
@@ -186,21 +189,21 @@ public class NYTStory: Object {
                     }
                 }).resume()
             }
-        });
+        }
     }
     
     public class func stringFromDate(date: NSDate) -> String {
-        return self.stringFormatter.stringFromDate(date)
+        return self.stringFormatter.string(from: date as Date)
     }
     
-    private static var stringFormatter: NSDateFormatter = {
-       let formatter = NSDateFormatter()
-        formatter.dateStyle = NSDateFormatterStyle.ShortStyle
+    private static var stringFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
         return formatter
     }()
     
-    private static var aDateFormatter: NSDateFormatter = {
-        let dateFormatter = NSDateFormatter()
+    private static var aDateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZ"
         
         return dateFormatter
@@ -209,11 +212,11 @@ public class NYTStory: Object {
     private class func cleanDateString(dateString: String) -> String {
         let string = dateString as NSString
         
-        let cleanedString = string.stringByReplacingOccurrencesOfString(":", withString: "", options:NSStringCompareOptions.LiteralSearch, range: NSMakeRange(string.length - 5, 5))
+        let cleanedString = string.replacingOccurrences(of: ":", with: "", options: .literal, range: NSMakeRange(string.length - 5, 5))
         
         return cleanedString
     }
-
+    
     override public static func ignoredProperties() -> [String] {
         return ["url"]
     }
@@ -283,7 +286,7 @@ public class NYTStoryImage: Object {
         if let property = json["copyright"] as? String {
             storyImage.copyright = property
         }
-
+        
         return storyImage;
     }
 }
